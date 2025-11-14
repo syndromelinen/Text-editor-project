@@ -1,0 +1,164 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <limits> 
+
+using namespace std;
+
+
+void displayMenu();
+void viewFile();
+void createFile();
+void appendToFile();
+void safeCinClear();
+
+
+void safeCinClear() {
+   
+    if (cin.fail()) {
+        cin.clear(); 
+    }
+   
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+}
+
+
+void displayMenu() {
+    cout << "\n=========================================\n";
+    cout << "           C++ TEXT EDITOR                 \n";
+    cout << "=========================================\n";
+    cout << "1. View existing file\n";
+    cout << "2. Create/Overwrite a new file\n";
+    cout << "3. Append text to an existing file\n";
+    cout << "4. Exit\n";
+    cout << "-----------------------------------------\n";
+    cout << "Enter your choice (1-4): ";
+}
+
+void viewFile() {
+    string filename;
+    cout << "\n--- View File ---\n";
+    cout << "Enter filename to view: ";
+    safeCinClear();
+    getline(cin, filename);
+
+  
+    ifstream inputFile(filename);
+
+    if (inputFile.is_open()) {
+        cout << "\n=========================================\n";
+        cout << "Contents of '" << filename << "':\n";
+        cout << "=========================================\n";
+
+        string line;
+        while (getline(inputFile, line)) {
+            cout << line << endl;
+        }
+
+        cout << "=========================================\n";
+        inputFile.close();
+    } else {
+        cerr << "ERROR: Could not open file '" << filename << "'. It may not exist.\n";
+    }
+}
+
+
+ 
+void createFile() {
+    string filename;
+    cout << "\n--- Create/Overwrite File ---\n";
+    cout << "Enter filename for the new file: ";
+    safeCinClear();
+    getline(cin, filename);
+
+   
+    ofstream outputFile(filename);
+
+    if (outputFile.is_open()) {
+        cout << "Enter the text (end with an empty line and press Enter twice):\n";
+        cout << "--------------------------------------------------------------\n";
+
+        string line;
+        
+        while (getline(cin, line) && !line.empty()) {
+            outputFile << line << endl;
+        }
+
+        outputFile.close();
+        cout << "\nSUCCESS: File '" << filename << "' created/overwritten successfully.\n";
+    } else {
+        cerr << "ERROR: Could not create/open file '" << filename << "' for writing.\n";
+    }
+}
+
+
+   
+ 
+void appendToFile() {
+    string filename;
+    cout << "\n--- Append to File ---\n";
+    cout << "Enter filename to append to: ";
+    safeCinClear();
+    getline(cin, filename);
+
+   
+    ofstream outputFile(filename, ios::app);
+
+    if (outputFile.is_open()) {
+        cout << "Enter text to append (end with an empty line and press Enter twice):\n";
+        cout << "--------------------------------------------------------------\n";
+
+        string line;
+        
+        while (getline(cin, line) && !line.empty()) {
+            outputFile << line << endl;
+        }
+
+        outputFile.close();
+        cout << "\nSUCCESS: Text appended to '" << filename << "' successfully.\n";
+    } else {
+        cerr << "ERROR: Could not open file '" << filename << "'. It may not exist.\n";
+    }
+}
+
+int main() {
+    int choice;
+
+
+    cout << fixed;
+
+    do {
+        displayMenu();
+
+        
+        if (!(cin >> choice)) {
+            cerr << "Invalid input. Please enter a number.\n";
+            safeCinClear(); 
+            choice = 0; 
+            continue;
+        }
+
+        
+        switch (choice) {
+            case 1:
+                viewFile();
+                break;
+            case 2:
+                createFile();
+                break;
+            case 3:
+                appendToFile();
+                break;
+            case 4:
+                cout << "\nExiting the text editor. Goodbye!\n";
+                break;
+            default:
+                cout << "Invalid choice. Please select a number between 1 and 4.\n";
+                break;
+        }
+
+    } while (choice != 4);
+
+    return 0;
+}
